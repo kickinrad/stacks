@@ -23,9 +23,14 @@ printf '\nSeed change that must not reach existing projects.\n' >> _shared/base/
 git -c user.email=t@t -c user.name=t commit -qam "owned and seeded change"
 git tag v900.0.1
 cd "$work/project"
+if python3 .agents/stack/check --json > "$work/before.json"; then echo "check passed while a release behind" >&2; exit 1; fi
+grep -q '"template-behind"' "$work/before.json"
+grep -q '"latest": "v900.0.1"' "$work/before.json"
 copier update --quiet --defaults --trust
 grep -q "Release marker: v900.0.1" .agents/stack/STACK.md
 grep -q "Project note." AGENTS.md
 ! grep -q "must not reach" AGENTS.md
 grep -q "_commit: v900.0.1" .copier-answers.yml
+python3 .agents/stack/check --json > "$work/after.json" || true
+! grep -q '"template-behind"' "$work/after.json"
 echo "stacks update: PASS"

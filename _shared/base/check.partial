@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+# Generated from the {{ stack }} stack; `copier update` replaces this file.
+"""Report how this project drifts from its stack.
+
+  .agents/stack/check              structure + freshness (local, badge, /stack check)
+  .agents/stack/check --structure  facets only; CI runs this, so upstream releases never fail a PR
+  .agents/stack/check --json       machine-readable result for the stack mod
+"""
+
+import json
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+OWNED = {{ owned_files | tojson }}
+EXTENDS = {% if extends %}"{{ extends }}"{% else %}None{% endif %}
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def run(*command: str) -> str:
+    if not shutil.which(command[0]):
+        return ""
+    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
+    return result.stdout
+
+
+def answers() -> dict[str, str]:
+    path = ROOT / ".copier-answers.yml"
+    if not path.is_file():
+        return {}
+    pairs = (line.partition(":") for line in path.read_text().splitlines() if not line.startswith(("#", " ")))
+    return {key.strip(): value.strip().strip("'\"") for key, sep, value in pairs if sep}
+
+
+def version(tag: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in re.findall(r"\d+", tag.split("-")[0]))
+
+
+def structure() -> list[dict[str, str]]:
+    found = [{"id": "missing-owned", "message": f"{path} is missing; run copier update"} for path in OWNED if not (ROOT / path).exists()]
+    if (ROOT / "CLAUDE.md").exists():
+        found.append({"id": "claude-md", "message": "AGENTS.md only: merge CLAUDE.md into AGENTS.md and delete it"})
+    if (ROOT / "mise.lock").exists():
+        found.append({"id": "mise-lock", "message": "tools track latest: delete mise.lock"})
+    return found
+
+
+def freshness(declared: dict[str, str]) -> tuple[list[dict[str, str]], str | None]:
+    found: list[dict[str, str]] = []
+    latest = None
+    source, current = declared.get("_src_path", ""), declared.get("_commit", "")
+    tags = [line.rsplit("/", 1)[-1] for line in run("git", "ls-remote", "--tags", "--refs", source).splitlines()]
+    tags = [tag for tag in tags if re.fullmatch(r"v\d+\.\d+\.\d+", tag)]
+    if tags and current:
+        latest = max(tags, key=version)
+        if version(latest) > version(current):
+            found.append({"id": "template-behind", "message": f"stack template {current} → {latest}: run copier update"})
+    try:
+        outdated = json.loads(run("mise", "outdated", "--json") or "{}")
+    except json.JSONDecodeError:
+        outdated = {}
+    found.extend({"id": "tool-behind", "message": f"{name} {info.get('current')} → {info.get('latest')}: run mise upgrade"}
+                 for name, info in outdated.items())
+    if (ROOT / "bun.lock").exists():
+        rows = [line for line in run("bun", "outdated").splitlines() if line.startswith("│") and "Package" not in line]
+        if rows:
+            found.append({"id": "lock-behind", "message": f"bun.lock has {len(rows)} outdated packages: run bun update"})
+    if (ROOT / "uv.lock").exists():
+        updates = [line for line in run("uv", "lock", "--upgrade", "--dry-run").splitlines() if line.strip().startswith("Update ")]
+        if updates:
+            found.append({"id": "lock-behind", "message": f"uv.lock has {len(updates)} upgrades: run uv lock --upgrade"})
+    return found, latest
+
+
+def main() -> int:
+    declared = answers()
+    findings = structure()
+    latest = None
+    if "--structure" not in sys.argv:
+        fresh, latest = freshness(declared)
+        findings += fresh
+    result = {"stack": declared.get("stack"), "extends": EXTENDS, "release": declared.get("_commit"), "latest": latest, "drift": findings}
+    if "--json" in sys.argv:
+        print(json.dumps(result))
+    else:
+        print(f"stack {result['stack']} ({result['release']}): {len(findings)} drift")
+        for finding in findings:
+            print(f"- {finding['id']}: {finding['message']}")
+    return 1 if findings else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -28,6 +28,8 @@ for stack in "${stacks[@]}"; do
     mise run check
     mise run test
     if mise tasks --json | grep -q '"name": "e2e"'; then mise run e2e; fi
+    python3 .agents/stack/check --structure
+    test -x .agents/stack/check
     if [ -n "${PROJECT_SETUP:-}" ]; then
       python3 "$PROJECT_SETUP" . --mode verify --format human
     fi
