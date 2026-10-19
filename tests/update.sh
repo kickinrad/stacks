@@ -40,4 +40,8 @@ grep -q "missing-facet: AGENTS.md does not link" "$work/facet.txt"
 sed -i "s|^_src_path: .*|_src_path: $work/no-such-template|" .copier-answers.yml
 python3 .agents/stack/check --json > "$work/probe.json" || true
 grep -q '"probe-failed"' "$work/probe.json"
+grep -q 'could not check template releases' "$work/probe.json"
+sed -i "s|^_src_path: .*|_src_path: $work/template|; /^_commit:/d" .copier-answers.yml
+python3 .agents/stack/check --json > "$work/nocommit.json" || true
+grep -q 'no valid _commit' "$work/nocommit.json"
 echo "stacks update: PASS"

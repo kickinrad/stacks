@@ -22,16 +22,16 @@ REQUIRED_TASKS = ["setup", "check", "test"]
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def run(*command: str) -> tuple[int, str]:
-    """Exit code and stdout; 127 when the tool is not installed."""
+def run(*command: str, cwd: Path = ROOT) -> tuple[int, str, str]:
+    """Exit code, stdout and a short stderr excerpt; 127 when the tool is not installed."""
     if not shutil.which(command[0]):
-        return 127, ""
-    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
-    return result.returncode, result.stdout
+        return 127, "", f"{command[0]} is not installed"
+    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True, check=False)
+    return result.returncode, result.stdout, " ".join(result.stderr.split())[:200]
 
 
-def unknown(probe: str, why: str) -> dict[str, str]:
-    return {"id": "probe-failed", "message": f"could not check {probe}: {why}"}
+def unknown(probe: str, code: int, why: str) -> dict[str, str]:
+    return {"id": "probe-failed", "message": f"could not check {probe} (exit {code}): {why or 'no output'}"}
 
 
 def answers() -> dict[str, str]:
@@ -82,36 +82,39 @@ def freshness(declared: dict[str, str]) -> tuple[list[dict[str, str]], str | Non
     found: list[dict[str, str]] = []
     latest = None
     source, current = declared.get("_src_path", ""), declared.get("_commit", "")
-    code, out = run("git", "-c", "protocol.ext.allow=never", "ls-remote", "--tags", "--refs", source)
+    # Outside the repository, so its own git config (core.sshCommand, hooks) never applies.
+    code, out, err = run("git", "-c", "protocol.ext.allow=never", "ls-remote", "--tags", "--refs", source, cwd=Path("/"))
     tags = [tag for tag in (line.rsplit("/", 1)[-1] for line in out.splitlines()) if re.fullmatch(r"v\d+\.\d+\.\d+", tag)]
     if code or not tags:
-        found.append(unknown("template releases", f"git ls-remote {source} exited {code}" if code else "no release tags"))
-    elif current:
+        found.append(unknown(f"template releases from {source or 'an unknown source'}", code, err if code else "no release tags"))
+    elif not re.fullmatch(r"v\d+\.\d+\.\d+(-.*)?", current or ""):
+        found.append(unknown("the template release", 0, f"no valid _commit in .copier-answers.yml ({current or 'missing'})"))
+    else:
         latest = max(tags, key=version)
         if version(latest) > version(current):
             found.append({"id": "template-behind", "message": f"stack template {current} → {latest}: run copier update"})
-    code, out = run("mise", "outdated", "--json")
+    code, out, err = run("mise", "outdated", "--json")
     try:
         outdated = json.loads(out or "{}") if code == 0 else None
     except json.JSONDecodeError:
         outdated = None
     if outdated is None:
-        found.append(unknown("mise tools", f"mise outdated exited {code}"))
+        found.append(unknown("mise tools", code, err))
     else:
         found.extend({"id": "tool-behind", "message": f"{name} {info.get('current')} → {info.get('latest')}: run mise upgrade"}
                      for name, info in outdated.items())
     if (ROOT / "bun.lock").exists():
-        code, out = run("bun", "outdated")
+        code, out, err = run("bun", "outdated")
         rows = [line for line in out.splitlines() if line.startswith("│") and "Package" not in line]
         if code:
-            found.append(unknown("bun.lock", f"bun outdated exited {code}"))
+            found.append(unknown("bun.lock", code, err))
         elif rows:
             found.append({"id": "lock-behind", "message": f"bun.lock has {len(rows)} outdated packages: run bun update"})
     if (ROOT / "uv.lock").exists():
-        code, out = run("uv", "lock", "--upgrade", "--dry-run")
+        code, out, err = run("uv", "lock", "--upgrade", "--dry-run")
         updates = [line for line in out.splitlines() if line.strip().startswith("Update ")]
         if code:
-            found.append(unknown("uv.lock", f"uv lock --dry-run exited {code}"))
+            found.append(unknown("uv.lock", code, err))
         elif updates:
             found.append({"id": "lock-behind", "message": f"uv.lock has {len(updates)} upgrades: run uv lock --upgrade"})
     return found, latest
