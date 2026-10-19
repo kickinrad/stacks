@@ -8,6 +8,10 @@ _skip_if_exists:
   - mise.toml
   - .gitignore
   - .claude/settings.json
+  - biome.jsonc
+  - .mcp.json
+  - .codex/config.toml
+  - lefthook.yml
   - package.json
   - tsconfig.json
   - pyproject.toml
@@ -31,6 +35,11 @@ _tasks:
   # Biome needs a second pass to settle some .astro files (upstream formatter quirk).
   - command: "bun install && bunx ultracite fix && bunx ultracite fix"
     when: "{{ stack in ['astro', 'emdash'] and _copier_operation == 'copy' }}"
+  # Seeded MCP configs keep the project's own servers; the stack's required ones are added if missing.
+  - command: "python3 {{ _copier_conf.src_path }}/_tasks/ensure_mcp.py . astro-docs=https://mcp.docs.astro.build/mcp"
+    when: "{{ stack == 'astro' }}"
+  - command: "python3 {{ _copier_conf.src_path }}/_tasks/ensure_mcp.py . astro-docs=https://mcp.docs.astro.build/mcp emdash-docs=https://docs.emdashcms.com/mcp cloudflare=https://mcp.cloudflare.com/mcp"
+    when: "{{ stack == 'emdash' }}"
   - command: "bunx skills add emdash-cms/emdash --skill building-emdash-site --skill emdash-cli --skill creating-plugins -a claude-code -a codex -y"
     when: "{{ stack == 'emdash' }}"
 

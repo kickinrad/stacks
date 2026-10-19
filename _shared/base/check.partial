@@ -20,6 +20,7 @@ OWNED = {{ owned_files | tojson }}
 EXTENDS = {% if extends %}"{{ extends }}"{% else %}None{% endif %}
 REQUIRED_MCP = {{ (required_mcp or []) | tojson }}
 REQUIRED_TASKS = ["setup", "check", "test"]
+NEEDS_BIOME = {{ "True" if needs_biome else "False" }}
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -72,6 +73,12 @@ def structure() -> list[dict[str, str]]:
     elif "STACK.md" not in agents.read_text():
         found.append({"id": "missing-facet", "message": "AGENTS.md does not link .agents/stack/STACK.md"})
     found.extend({"id": "missing-facet", "message": f"mise task {name} is not defined"} for name in REQUIRED_TASKS if name not in tasks())
+    if not (ROOT / "lefthook.yml").is_file():
+        found.append({"id": "missing-facet", "message": "lefthook.yml is missing (git hooks run mise tasks)"})
+    if NEEDS_BIOME:
+        biome = ROOT / "biome.jsonc"
+        if not biome.is_file() or "ultracite/biome/core" not in biome.read_text():
+            found.append({"id": "missing-facet", "message": "biome.jsonc must extend ultracite/biome/core"})
     if REQUIRED_MCP:
         try:
             servers = json.loads((ROOT / ".mcp.json").read_text()).get("mcpServers", {})
