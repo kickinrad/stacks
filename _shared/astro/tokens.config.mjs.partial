@@ -1,0 +1,4 @@
+export default {
+  css: { layer: "tokens", path: "src/styles/tokens.css" },
+  targets: ["css", "design-md"],
+};

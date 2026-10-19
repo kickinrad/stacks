@@ -1,0 +1,7 @@
+# Official app creators. A stack listed here is applied on top of its creator's
+# output; `{dir}` is the target directory. Stacks without a creator render alone.
+[astro]
+run = "bun create astro@latest {dir} -- --template minimal --no-install --no-git --skip-houston -y"
+
+[emdash]
+run = "bunx create-emdash@latest {dir} --platform cloudflare --template starter --pm bun --no-install --yes"

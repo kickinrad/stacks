@@ -1,0 +1,7 @@
+
+## EmDash on Cloudflare
+
+- EmDash runs on Workers with D1 and R2; `wrangler.jsonc` is the project's. `check` runs `wrangler types` before `astro check`.
+- Use `mise run dev` (plain `astro dev`): `emdash dev` mis-detects Astro 7's non-TTY auto-daemonization.
+- The official EmDash skills (`.agents/skills/`), the EmDash docs MCP (`emdash-docs`) and the Cloudflare MCP and skills own CMS and platform mechanics; the `emdash` plugin's `emdash-site-operations` owns deploy and launch.
+- Secrets are value-free references in `.secrets.refs`, pushed to GitHub and Wrangler from 1Password; deploys use committed token outputs and never rebuild them.

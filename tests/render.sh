@@ -6,22 +6,28 @@ template="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 stacks=("$@")
 [ ${#stacks[@]} -gt 0 ] || mapfile -t stacks < <(sed -n 's/^    .*: \([a-z][a-z0-9-]*\)$/\1/p' "$template/copier.yml")
 work="$(mktemp -d)"
-trap 'rm -rf "$work"' EXIT
+[ -n "${KEEP:-}" ] && echo "work: $work" || trap 'rm -rf "$work"' EXIT
 for stack in "${stacks[@]}"; do
   echo "== $stack"
-  copier copy --quiet --defaults --trust --vcs-ref HEAD \
+  creator="$(python3 -c 'import sys, tomllib; print(tomllib.load(open(sys.argv[1], "rb")).get(sys.argv[2], {}).get("run", ""))' "$template/creators.toml" "$stack")"
+  if [ -n "$creator" ]; then
+    (cd "$work" && sh -c "${creator//\{dir\}/$stack-demo}" >/dev/null)
+  fi
+  copier copy --quiet --defaults --trust --overwrite --vcs-ref HEAD \
     --data stack="$stack" --data description="Render test" "$template" "$work/$stack-demo"
   (
     cd "$work/$stack-demo"
-    git init -q -b main
+    git rev-parse --git-dir >/dev/null 2>&1 || git init -q -b main
     mise trust -q .config/mise/conf.d/stack.toml
     mise trust -q mise.toml
+    export CI=1
     test ! -e CLAUDE.md
     test ! -e mise.lock
     mise run setup >/dev/null
     git add -A
     mise run check
     mise run test
+    if mise tasks --json | grep -q '"name": "e2e"'; then mise run e2e; fi
     if [ -n "${PROJECT_SETUP:-}" ]; then
       python3 "$PROJECT_SETUP" . --mode verify --format human
     fi

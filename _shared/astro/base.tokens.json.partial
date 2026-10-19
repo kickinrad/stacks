@@ -1,0 +1,9 @@
+{
+  "color": {
+    "ink": { "$type": "color", "$value": "#1a1b26" },
+    "paper": { "$type": "color", "$value": "#ffffff" }
+  },
+  "space": {
+    "md": { "$type": "dimension", "$value": { "value": 16, "unit": "px" } }
+  }
+}

@@ -13,8 +13,26 @@ _skip_if_exists:
   - pyproject.toml
   - src
   - tests
+  - tokens.config.mjs
+  - tokens
+  - playwright.config.ts
+  - e2e
+  - .secrets.refs
 _exclude:
   - "*.partial"
+_tasks:
+  # Every stack project is a git repository; linters read .gitignore through it.
+  - command: "git rev-parse --git-dir >/dev/null 2>&1 || git init -q -b main"
+  # A creator's own AGENTS.md is kept; it gains one link to the stack rules.
+  - command: "grep -qs 'STACK.md' AGENTS.md || printf '\\nStack rules: [.agents/stack/STACK.md](.agents/stack/STACK.md).\\n' >> AGENTS.md"
+  - command: "bun add --dev @biomejs/biome@latest ultracite@latest @astrojs/check@latest typescript@6 @playwright/test@latest @types/bun@latest"
+    when: "{{ stack in ['astro', 'emdash'] }}"
+  # Adopting the formatter on a fresh starter: format it once, on first copy only.
+  # Biome needs a second pass to settle some .astro files (upstream formatter quirk).
+  - command: "bun install && bunx ultracite fix && bunx ultracite fix"
+    when: "{{ stack in ['astro', 'emdash'] and _copier_operation == 'copy' }}"
+  - command: "bunx skills add emdash-cms/emdash --skill building-emdash-site --skill emdash-cli --skill creating-plugins -a claude-code -a codex -y"
+    when: "{{ stack == 'emdash' }}"
 
 stack:
   type: str
@@ -22,6 +40,8 @@ stack:
   choices:
     A Bun + TypeScript library or tool: bun-lib
     A uv + Python package or tool: python
+    An Astro site: astro
+    An EmDash site on Cloudflare (extends astro): emdash
 
 project_name:
   type: str

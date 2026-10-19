@@ -1,0 +1,11 @@
+,
+    {
+      // EmDash's Worker entry must re-export its runtime classes.
+      "includes": ["src/worker.ts"],
+      "linter": { "rules": { "style": { "noExportedImports": "off" } } }
+    },
+    {
+      // The EmDash starter renders CMS images without fixed sizes; review, don't block.
+      "includes": ["**/*.astro"],
+      "linter": { "rules": { "correctness": { "useImageSize": "warn" } } }
+    }

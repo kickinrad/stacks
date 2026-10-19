@@ -1,0 +1,7 @@
+
+## Astro
+
+- The app comes from the official creator (`creators.toml`); this stack layers tooling on top and leaves app code to the project.
+- Design tokens are the only value source: edit `tokens/*.tokens.json`, run `tokens`, and commit the outputs; `check` runs `tokens --check`. Never hand-edit `src/styles/tokens.css`.
+- `astro check` is the type gate. It requires TypeScript 6 until TypeScript 7.1 ships a programmatic API, so `typescript@6` is the one recorded version hold; lift it when `astro check` supports 7. Playwright covers the browser surface: `mise run e2e`.
+- The Astro docs MCP (`astro-docs`) answers framework questions; prefer it over memory.

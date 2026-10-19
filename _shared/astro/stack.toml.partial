@@ -1,0 +1,27 @@
+# Generated from the {{ stack }} stack; `copier update` replaces this file.
+# Override a task by defining it in mise.toml.
+[tools]
+bun = "latest"
+"github:kickinrad/tokens" = "latest"
+
+[tasks.setup]
+run = ["bun install", "bunx playwright install chromium", "tokens"]
+
+[tasks.check]
+run = ["tokens --check", "bunx ultracite check", "{{ astro_check }}"]
+
+[tasks.fix]
+run = "bunx ultracite fix"
+
+[tasks.test]
+run = "bun test --pass-with-no-tests"
+
+[tasks.dev]
+run = "bunx astro dev"
+
+[tasks.build]
+run = "bunx astro build"
+
+[tasks.e2e]
+run = "bunx playwright test"
+{{ extra_tasks }}

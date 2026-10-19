@@ -7,4 +7,4 @@ uv = "latest"
 run = "copier --version >/dev/null"
 
 [tasks.test]
-run = "tests/render.sh"
+run = ["tests/update.sh", "tests/render.sh"]

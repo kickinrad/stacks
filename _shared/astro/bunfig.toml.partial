@@ -1,0 +1,4 @@
+# Generated from the {{ stack }} stack; `copier update` replaces this file.
+# Unit tests live beside the code; Playwright owns e2e/.
+[test]
+root = "src"

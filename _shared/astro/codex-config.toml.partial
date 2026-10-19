@@ -1,0 +1,4 @@
+# Generated from the {{ stack }} stack; `copier update` replaces this file.
+[mcp_servers.astro-docs]
+url = "https://mcp.docs.astro.build/mcp"
+{{ extra_codex_mcp }}
