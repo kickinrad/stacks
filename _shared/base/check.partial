@@ -8,6 +8,7 @@
 """
 
 import json
+import os
 import re
 import tomllib
 import shutil
@@ -22,11 +23,11 @@ REQUIRED_TASKS = ["setup", "check", "test"]
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def run(*command: str, cwd: Path = ROOT) -> tuple[int, str, str]:
+def run(*command: str, cwd: Path = ROOT, env: dict[str, str] | None = None) -> tuple[int, str, str]:
     """Exit code, stdout and a short stderr excerpt; 127 when the tool is not installed."""
     if not shutil.which(command[0]):
         return 127, "", f"{command[0]} is not installed"
-    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True, check=False)
+    result = subprocess.run(command, cwd=cwd, env=env, capture_output=True, text=True, check=False)
     return result.returncode, result.stdout, " ".join(result.stderr.split())[:200]
 
 
@@ -82,8 +83,10 @@ def freshness(declared: dict[str, str]) -> tuple[list[dict[str, str]], str | Non
     found: list[dict[str, str]] = []
     latest = None
     source, current = declared.get("_src_path", ""), declared.get("_commit", "")
-    # Outside the repository, so its own git config (core.sshCommand, hooks) never applies.
-    code, out, err = run("git", "-c", "protocol.ext.allow=never", "ls-remote", "--tags", "--refs", source, cwd=Path("/"))
+    # Outside the repository and without inherited GIT_* variables, so neither the repository's
+    # git config nor an environment overlay can redirect the probe to a command transport.
+    clean = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")} | {"GIT_TERMINAL_PROMPT": "0"}
+    code, out, err = run("git", "-c", "protocol.ext.allow=never", "ls-remote", "--tags", "--refs", source, cwd=Path("/"), env=clean)
     tags = [tag for tag in (line.rsplit("/", 1)[-1] for line in out.splitlines()) if re.fullmatch(r"v\d+\.\d+\.\d+", tag)]
     if code or not tags:
         found.append(unknown(f"template releases from {source or 'an unknown source'}", code, err if code else "no release tags"))
