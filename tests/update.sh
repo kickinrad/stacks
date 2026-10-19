@@ -33,4 +33,11 @@ grep -q "Project note." AGENTS.md
 grep -q "_commit: v900.0.1" .copier-answers.yml
 python3 .agents/stack/check --json > "$work/after.json" || true
 ! grep -q '"template-behind"' "$work/after.json"
+# A removed base facet is structural drift; an unreadable probe is "unknown", never clean.
+sed -i '/STACK.md/d' AGENTS.md
+if python3 .agents/stack/check --structure > "$work/facet.txt"; then echo "check passed without the STACK.md link" >&2; exit 1; fi
+grep -q "missing-facet: AGENTS.md does not link" "$work/facet.txt"
+sed -i "s|^_src_path: .*|_src_path: $work/no-such-template|" .copier-answers.yml
+python3 .agents/stack/check --json > "$work/probe.json" || true
+grep -q '"probe-failed"' "$work/probe.json"
 echo "stacks update: PASS"

@@ -9,6 +9,7 @@
 
 import json
 import re
+import tomllib
 import shutil
 import subprocess
 import sys
@@ -16,14 +17,21 @@ from pathlib import Path
 
 OWNED = {{ owned_files | tojson }}
 EXTENDS = {% if extends %}"{{ extends }}"{% else %}None{% endif %}
+REQUIRED_MCP = {{ (required_mcp or []) | tojson }}
+REQUIRED_TASKS = ["setup", "check", "test"]
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def run(*command: str) -> str:
+def run(*command: str) -> tuple[int, str]:
+    """Exit code and stdout; 127 when the tool is not installed."""
     if not shutil.which(command[0]):
-        return ""
+        return 127, ""
     result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
-    return result.stdout
+    return result.returncode, result.stdout
+
+
+def unknown(probe: str, why: str) -> dict[str, str]:
+    return {"id": "probe-failed", "message": f"could not check {probe}: {why}"}
 
 
 def answers() -> dict[str, str]:
@@ -38,8 +46,31 @@ def version(tag: str) -> tuple[int, ...]:
     return tuple(int(part) for part in re.findall(r"\d+", tag.split("-")[0]))
 
 
+def tasks() -> set[str]:
+    names: set[str] = set()
+    for path in [*sorted((ROOT / ".config/mise/conf.d").glob("*.toml")), ROOT / "mise.toml"]:
+        if path.is_file():
+            try:
+                names.update(tomllib.loads(path.read_text()).get("tasks", {}))
+            except tomllib.TOMLDecodeError:
+                pass
+    return names
+
+
 def structure() -> list[dict[str, str]]:
     found = [{"id": "missing-owned", "message": f"{path} is missing; run copier update"} for path in OWNED if not (ROOT / path).exists()]
+    agents = ROOT / "AGENTS.md"
+    if not agents.is_file():
+        found.append({"id": "missing-facet", "message": "AGENTS.md is missing"})
+    elif "STACK.md" not in agents.read_text():
+        found.append({"id": "missing-facet", "message": "AGENTS.md does not link .agents/stack/STACK.md"})
+    found.extend({"id": "missing-facet", "message": f"mise task {name} is not defined"} for name in REQUIRED_TASKS if name not in tasks())
+    if REQUIRED_MCP:
+        try:
+            servers = json.loads((ROOT / ".mcp.json").read_text()).get("mcpServers", {})
+        except (OSError, json.JSONDecodeError):
+            servers = {}
+        found.extend({"id": "missing-facet", "message": f".mcp.json lacks the {name} server"} for name in REQUIRED_MCP if name not in servers)
     if (ROOT / "CLAUDE.md").exists():
         found.append({"id": "claude-md", "message": "AGENTS.md only: merge CLAUDE.md into AGENTS.md and delete it"})
     if (ROOT / "mise.lock").exists():
@@ -51,25 +82,37 @@ def freshness(declared: dict[str, str]) -> tuple[list[dict[str, str]], str | Non
     found: list[dict[str, str]] = []
     latest = None
     source, current = declared.get("_src_path", ""), declared.get("_commit", "")
-    tags = [line.rsplit("/", 1)[-1] for line in run("git", "ls-remote", "--tags", "--refs", source).splitlines()]
-    tags = [tag for tag in tags if re.fullmatch(r"v\d+\.\d+\.\d+", tag)]
-    if tags and current:
+    code, out = run("git", "-c", "protocol.ext.allow=never", "ls-remote", "--tags", "--refs", source)
+    tags = [tag for tag in (line.rsplit("/", 1)[-1] for line in out.splitlines()) if re.fullmatch(r"v\d+\.\d+\.\d+", tag)]
+    if code or not tags:
+        found.append(unknown("template releases", f"git ls-remote {source} exited {code}" if code else "no release tags"))
+    elif current:
         latest = max(tags, key=version)
         if version(latest) > version(current):
             found.append({"id": "template-behind", "message": f"stack template {current} → {latest}: run copier update"})
+    code, out = run("mise", "outdated", "--json")
     try:
-        outdated = json.loads(run("mise", "outdated", "--json") or "{}")
+        outdated = json.loads(out or "{}") if code == 0 else None
     except json.JSONDecodeError:
-        outdated = {}
-    found.extend({"id": "tool-behind", "message": f"{name} {info.get('current')} → {info.get('latest')}: run mise upgrade"}
-                 for name, info in outdated.items())
+        outdated = None
+    if outdated is None:
+        found.append(unknown("mise tools", f"mise outdated exited {code}"))
+    else:
+        found.extend({"id": "tool-behind", "message": f"{name} {info.get('current')} → {info.get('latest')}: run mise upgrade"}
+                     for name, info in outdated.items())
     if (ROOT / "bun.lock").exists():
-        rows = [line for line in run("bun", "outdated").splitlines() if line.startswith("│") and "Package" not in line]
-        if rows:
+        code, out = run("bun", "outdated")
+        rows = [line for line in out.splitlines() if line.startswith("│") and "Package" not in line]
+        if code:
+            found.append(unknown("bun.lock", f"bun outdated exited {code}"))
+        elif rows:
             found.append({"id": "lock-behind", "message": f"bun.lock has {len(rows)} outdated packages: run bun update"})
     if (ROOT / "uv.lock").exists():
-        updates = [line for line in run("uv", "lock", "--upgrade", "--dry-run").splitlines() if line.strip().startswith("Update ")]
-        if updates:
+        code, out = run("uv", "lock", "--upgrade", "--dry-run")
+        updates = [line for line in out.splitlines() if line.strip().startswith("Update ")]
+        if code:
+            found.append(unknown("uv.lock", f"uv lock --dry-run exited {code}"))
+        elif updates:
             found.append({"id": "lock-behind", "message": f"uv.lock has {len(updates)} upgrades: run uv lock --upgrade"})
     return found, latest
 
