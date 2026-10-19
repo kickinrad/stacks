@@ -1,4 +1,4 @@
-# Generated from the {{ stack }} stack; `copier update` replaces this file.
+# Seeded from the {{ stack }} stack; this project contract is the project's to extend.
 [project]
 name = "{{ project_name }}"
 
@@ -7,7 +7,7 @@ claude_code = true
 codex = true
 
 [git]
-profile = "component"
+profile = "{{ git_profile }}"
 
 [requirements]
 shared_instructions = true

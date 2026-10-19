@@ -8,6 +8,7 @@ _skip_if_exists:
   - mise.toml
   - .gitignore
   - .claude/settings.json
+  - .agents/project.toml
   - biome.jsonc
   - .mcp.json
   - .codex/config.toml
@@ -57,6 +58,14 @@ project_name:
   help: Project name (kebab-case)
   default: "{{ _folder_name }}"
   validator: "{% if not (project_name | regex_search('^[a-z][a-z0-9-]*$')) %}Use lowercase kebab-case{% endif %}"
+
+git_profile:
+  type: str
+  help: Git flow
+  default: component
+  choices:
+    "component: PR to main, squash": component
+    "staged-site: PR to dev, promote dev to main": staged-site
 
 description:
   type: str
