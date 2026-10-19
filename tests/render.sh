@@ -4,7 +4,7 @@
 set -euo pipefail
 template="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 stacks=("$@")
-[ ${#stacks[@]} -gt 0 ] || mapfile -t stacks < <(sed -n 's/^    .*: \([a-z][a-z0-9-]*\)$/\1/p' "$template/copier.yml")
+[ ${#stacks[@]} -gt 0 ] || mapfile -t stacks < <(cd "$template" && for d in */; do [ -e "$d{{ _copier_conf.answers_file }}.jinja" ] && echo "${d%/}"; done)
 work="$(mktemp -d)"
 [ -n "${KEEP:-}" ] && echo "work: $work" || trap 'rm -rf "$work"' EXIT
 for stack in "${stacks[@]}"; do
