@@ -1,0 +1,2 @@
+# Stack declaration, written by Copier. Edit answers with `copier update`, not by hand.
+{{ _copier_answers|to_nice_yaml -}}

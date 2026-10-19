@@ -1,0 +1,21 @@
+# Generated from the {{ stack }} stack; `copier update` replaces this file.
+[project]
+name = "{{ project_name }}"
+
+[harnesses]
+claude_code = true
+codex = true
+
+[git]
+profile = "component"
+
+[requirements]
+shared_instructions = true
+
+[requirements.mise]
+tools = [{% for tool in mise_tools %}"{{ tool }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+tasks = ["setup", "check", "test"]
+{% if package_manager %}
+[requirements.package]
+manager = "{{ package_manager }}"
+{% endif %}

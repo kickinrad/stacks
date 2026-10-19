@@ -1,0 +1,16 @@
+# Generated from the {{ stack }} stack; `copier update` replaces this file.
+# Override a task by defining it in mise.toml.
+[tools]
+bun = "latest"
+
+[tasks.setup]
+run = "bun install"
+
+[tasks.check]
+run = ["bunx ultracite check", "bunx tsc --noEmit"]
+
+[tasks.fix]
+run = "bunx ultracite fix"
+
+[tasks.test]
+run = "bun test"

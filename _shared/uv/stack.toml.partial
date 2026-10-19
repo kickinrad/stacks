@@ -1,0 +1,16 @@
+# Generated from the {{ stack }} stack; `copier update` replaces this file.
+# Override a task by defining it in mise.toml.
+[tools]
+uv = "latest"
+
+[tasks.setup]
+run = "uv sync"
+
+[tasks.check]
+run = ["uv run ruff check", "uv run ruff format --check", "uv run ty check"]
+
+[tasks.fix]
+run = ["uv run ruff check --fix", "uv run ruff format"]
+
+[tasks.test]
+run = "uv run pytest"

@@ -1,0 +1,7 @@
+# Generated from the {{ stack }} stack; `copier update` replaces this file.
+pre-commit:
+  jobs:
+    - run: mise run check
+pre-push:
+  jobs:
+    - run: mise run test

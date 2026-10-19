@@ -1,0 +1,2 @@
+# Project overrides. Stack defaults: .config/mise/conf.d/stack.toml.
+[env]

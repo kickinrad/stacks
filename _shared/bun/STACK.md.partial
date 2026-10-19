@@ -1,0 +1,6 @@
+
+## Bun
+
+- Bun is the runtime, package manager and test runner (`bun test`). No npm, pnpm or Node-only lockfiles.
+- Biome lints and formats through the Ultracite preset (`biome.jsonc`); `mise run fix` applies fixes, and an agent post-edit hook runs `ultracite fix`.
+- TypeScript 7 (`tsc --noEmit`) is the type gate.

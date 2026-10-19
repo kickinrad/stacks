@@ -1,0 +1,35 @@
+# One template, one folder per stack. A stack folder holds one-line includes of
+# _shared/ parts; adding a stack is one folder plus one choice below.
+_subdirectory: "{{ stack }}"
+_answers_file: .copier-answers.yml
+_skip_if_exists:
+  - AGENTS.md
+  - README.md
+  - mise.toml
+  - .gitignore
+  - .claude/settings.json
+  - package.json
+  - tsconfig.json
+  - pyproject.toml
+  - src
+  - tests
+_exclude:
+  - "*.partial"
+
+stack:
+  type: str
+  help: Which stack is this project?
+  choices:
+    A Bun + TypeScript library or tool: bun-lib
+    A uv + Python package or tool: python
+
+project_name:
+  type: str
+  help: Project name (kebab-case)
+  default: "{{ _folder_name }}"
+  validator: "{% if not (project_name | regex_search('^[a-z][a-z0-9-]*$')) %}Use lowercase kebab-case{% endif %}"
+
+description:
+  type: str
+  help: One-line description
+  default: ""

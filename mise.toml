@@ -1,0 +1,10 @@
+[tools]
+"pipx:copier" = "latest"
+bun = "latest"
+uv = "latest"
+
+[tasks.check]
+run = "copier --version >/dev/null"
+
+[tasks.test]
+run = "tests/render.sh"

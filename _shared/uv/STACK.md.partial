@@ -1,0 +1,5 @@
+
+## Python
+
+- uv manages Python, dependencies and the lockfile (`uv.lock`).
+- Ruff lints and formats; ty is the type gate; pytest runs tests. `mise run fix` applies Ruff fixes.
