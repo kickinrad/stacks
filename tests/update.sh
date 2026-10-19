@@ -44,4 +44,10 @@ grep -q 'could not check template releases' "$work/probe.json"
 sed -i "s|^_src_path: .*|_src_path: $work/template|; /^_commit:/d" .copier-answers.yml
 python3 .agents/stack/check --json > "$work/nocommit.json" || true
 grep -q 'no valid _commit' "$work/nocommit.json"
+# Copier's saved gh: shorthand resolves against the public template.
+sed -i "s|^_src_path: .*|_src_path: gh:kickinrad/stacks|; s|^_commit: .*|_commit: v0.0.1|" .copier-answers.yml
+grep -q '^_commit:' .copier-answers.yml || echo "_commit: v0.0.1" >> .copier-answers.yml
+python3 .agents/stack/check --json > "$work/gh.json" || true
+grep -q '"template-behind"' "$work/gh.json"
+! grep -q 'could not check template releases' "$work/gh.json"
 echo "stacks update: PASS"

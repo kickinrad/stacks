@@ -31,6 +31,12 @@ def run(*command: str, cwd: Path = ROOT, env: dict[str, str] | None = None) -> t
     return result.returncode, result.stdout, " ".join(result.stderr.split())[:200]
 
 
+def git_source(source: str) -> str:
+    """Copier saves GitHub sources as gh:owner/repo; git needs the HTTPS URL."""
+    match = re.fullmatch(r"gh:([\w.-]+)/([\w.-]+?)(?:\.git)?", source)
+    return f"https://github.com/{match[1]}/{match[2]}.git" if match else source
+
+
 def unknown(probe: str, code: int, why: str) -> dict[str, str]:
     return {"id": "probe-failed", "message": f"could not check {probe} (exit {code}): {why or 'no output'}"}
 
@@ -86,7 +92,7 @@ def freshness(declared: dict[str, str]) -> tuple[list[dict[str, str]], str | Non
     # Outside the repository and without inherited GIT_* variables, so neither the repository's
     # git config nor an environment overlay can redirect the probe to a command transport.
     clean = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")} | {"GIT_TERMINAL_PROMPT": "0"}
-    code, out, err = run("git", "-c", "protocol.ext.allow=never", "ls-remote", "--tags", "--refs", source, cwd=Path("/"), env=clean)
+    code, out, err = run("git", "-c", "protocol.ext.allow=never", "ls-remote", "--tags", "--refs", git_source(source), cwd=Path("/"), env=clean)
     tags = [tag for tag in (line.rsplit("/", 1)[-1] for line in out.splitlines()) if re.fullmatch(r"v\d+\.\d+\.\d+", tag)]
     if code or not tags:
         found.append(unknown(f"template releases from {source or 'an unknown source'}", code, err if code else "no release tags"))
