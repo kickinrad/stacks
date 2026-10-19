@@ -50,4 +50,14 @@ grep -q '^_commit:' .copier-answers.yml || echo "_commit: v0.0.1" >> .copier-ans
 python3 .agents/stack/check --json > "$work/gh.json" || true
 grep -q '"template-behind"' "$work/gh.json"
 ! grep -q 'could not check template releases' "$work/gh.json"
+# An adopted project (samples=false) never gets starter samples back on update.
+adopted="$work/adopted"
+copier copy --quiet --defaults --trust --vcs-ref v900.0.0 --data stack=python --data samples=false "$work/template" "$adopted"
+# An adopted project brings its own source.
+mkdir -p "$adopted/src/adopted" && printf '"""Adopted."""\n' > "$adopted/src/adopted/__init__.py"
+(cd "$adopted" && mise trust -q .config/mise/conf.d/stack.toml && mise trust -q mise.toml && mise run setup >/dev/null 2>&1 && git add -A && git -c user.email=t@t -c user.name=t commit -qm adopt)
+(cd "$work/template" && printf '\n' >> _shared/base/STACK.md.partial && git -c user.email=t@t -c user.name=t commit -qam bump && git tag v900.0.2)
+(cd "$adopted" && copier update --quiet --defaults --trust --skip-tasks)
+test ! -e "$adopted/tests"
+test "$(cat "$adopted/src/adopted/__init__.py")" = '"""Adopted."""'
 echo "stacks update: PASS"

@@ -25,6 +25,11 @@ _skip_if_exists:
   - .secrets.refs
 _exclude:
   - "*.partial"
+  # Starter samples render only for new projects; an adopted project answers samples=false.
+  - "{% if not samples %}tokens/base.tokens.json{% endif %}"
+  - "{% if not samples %}e2e{% endif %}"
+  - "{% if not samples %}src{% endif %}"
+  - "{% if not samples %}tests{% endif %}"
 _tasks:
   # Every stack project is a git repository; linters read .gitignore through it.
   - command: "git rev-parse --git-dir >/dev/null 2>&1 || git init -q -b main"
@@ -66,6 +71,11 @@ git_profile:
   choices:
     "component: PR to main, squash": component
     "staged-site: PR to dev, promote dev to main": staged-site
+
+samples:
+  type: bool
+  help: Render starter samples (example tokens, source and tests)? Say no when adopting an existing project.
+  default: true
 
 description:
   type: str
