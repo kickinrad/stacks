@@ -16,12 +16,12 @@ _skip_if_exists:
   - package.json
   - tsconfig.json
   - pyproject.toml
-  - src
-  - tests
+  - src/**
+  - tests/**
   - tokens.config.mjs
-  - tokens
+  - tokens/**
   - playwright.config.ts
-  - e2e
+  - e2e/**
   - .secrets.refs
 _exclude:
   - "*.partial"

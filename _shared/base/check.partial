@@ -109,7 +109,7 @@ def freshness(declared: dict[str, str]) -> tuple[list[dict[str, str]], str | Non
         latest = max(tags, key=version)
         if version(latest) > version(current):
             found.append({"id": "template-behind", "message": f"stack template {current} → {latest}: run copier update"})
-    code, out, err = run("mise", "outdated", "--json")
+    code, out, err = run("mise", "outdated", "--local", "--json")
     try:
         outdated = json.loads(out or "{}") if code == 0 else None
     except json.JSONDecodeError:
