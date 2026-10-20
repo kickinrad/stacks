@@ -1,5 +1,9 @@
 # Generated from the {{ stack }} stack; `copier update` replaces this file.
 # Override a task by defining it in mise.toml.
+[settings]
+# Our own releases are reviewed and published by us; mise's release-age hold is for third parties.
+minimum_release_age_excludes = ["github:kickinrad/tokens"]
+
 [tools]
 bun = "latest"
 "github:kickinrad/tokens" = "latest"
