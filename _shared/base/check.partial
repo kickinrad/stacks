@@ -87,8 +87,9 @@ def structure() -> list[dict[str, str]]:
         found.extend({"id": "missing-facet", "message": f".mcp.json lacks the {name} server"} for name in REQUIRED_MCP if name not in servers)
     if (ROOT / "CLAUDE.md").exists():
         found.append({"id": "claude-md", "message": "AGENTS.md only: merge CLAUDE.md into AGENTS.md and delete it"})
-    if (ROOT / "mise.lock").exists():
-        found.append({"id": "mise-lock", "message": "tools track latest: delete mise.lock"})
+    for lock in ("mise.lock", ".config/mise/mise.lock"):
+        if (ROOT / lock).exists():
+            found.append({"id": "mise-lock", "message": f"tools track latest: delete {lock}"})
     return found
 
 
