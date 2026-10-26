@@ -11,6 +11,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+for name in subprocess.run(["git", "rev-parse", "--local-env-vars"], check=True, capture_output=True, text=True).stdout.splitlines():
+    os.environ.pop(name, None)
 
 
 def include(path: str, prefix: str = "") -> str:
