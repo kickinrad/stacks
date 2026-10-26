@@ -3,13 +3,18 @@
 # files keep the project's edits, and _commit moves to the new release.
 set -euo pipefail
 template="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+copier_bin="$(cd "$template" && mise which copier)"
 work="$(mktemp -d)"
+export TMPDIR="$work" MISE_TRUSTED_CONFIG_PATHS="$work"
 trap 'rm -rf "$work"' EXIT
-cp -r "$template" "$work/template"
+mkdir "$work/template"
+tar -C "$template" --exclude=./.git -cf - . | tar -C "$work/template" -xf -
 cd "$work/template"
+git init -q -b main
+test "$(git rev-parse --path-format=absolute --git-common-dir)" != "$(git -C "$template" rev-parse --path-format=absolute --git-common-dir)"
 git add -A && git -c user.email=t@t -c user.name=t commit -qm "working tree" --allow-empty
 git tag v900.0.0
-copier copy --quiet --defaults --trust --vcs-ref v900.0.0 --data stack=bun-lib "$work/template" "$work/project"
+"$copier_bin" copy --quiet --defaults --trust --vcs-ref v900.0.0 --data stack=bun-lib "$work/template" "$work/project"
 cd "$work/project"
 mise trust -q .config/mise/conf.d/stack.toml
 mise trust -q mise.toml
@@ -26,7 +31,7 @@ cd "$work/project"
 if python3 .agents/stack/check --json > "$work/before.json"; then echo "check passed while a release behind" >&2; exit 1; fi
 grep -q '"template-behind"' "$work/before.json"
 grep -q '"latest": "v900.0.1"' "$work/before.json"
-copier update --quiet --defaults --trust
+"$copier_bin" update --quiet --defaults --trust
 grep -q "Release marker: v900.0.1" .agents/stack/STACK.md
 grep -q "Project note." AGENTS.md
 ! grep -q "must not reach" AGENTS.md
@@ -52,12 +57,12 @@ grep -q '"template-behind"' "$work/gh.json"
 ! grep -q 'could not check template releases' "$work/gh.json"
 # An adopted project (samples=false) never gets starter samples back on update.
 adopted="$work/adopted"
-copier copy --quiet --defaults --trust --vcs-ref v900.0.0 --data stack=python --data samples=false "$work/template" "$adopted"
+"$copier_bin" copy --quiet --defaults --trust --vcs-ref v900.0.0 --data stack=python --data samples=false "$work/template" "$adopted"
 # An adopted project brings its own source.
 mkdir -p "$adopted/src/adopted" && printf '"""Adopted."""\n' > "$adopted/src/adopted/__init__.py"
 (cd "$adopted" && mise trust -q .config/mise/conf.d/stack.toml && mise trust -q mise.toml && mise run setup >/dev/null 2>&1 && git add -A && git -c user.email=t@t -c user.name=t commit -qm adopt)
 (cd "$work/template" && printf '\n' >> _shared/base/STACK.md.partial && git -c user.email=t@t -c user.name=t commit -qam bump && git tag v900.0.2)
-(cd "$adopted" && copier update --quiet --defaults --trust --skip-tasks)
+(cd "$adopted" && "$copier_bin" update --quiet --defaults --trust --skip-tasks)
 test ! -e "$adopted/tests"
 test "$(cat "$adopted/src/adopted/__init__.py")" = '"""Adopted."""'
 echo "stacks update: PASS"
