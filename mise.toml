@@ -1,6 +1,7 @@
 [tools]
 "pipx:copier" = "latest"
 bun = "latest"
+node = "latest"
 uv = "latest"
 
 [tasks.check]
