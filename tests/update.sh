@@ -2,6 +2,8 @@
 # copier update across a template release: owned files take the change, seeded
 # files keep the project's edits, and _commit moves to the new release.
 set -euo pipefail
+# A pre-push hook exports its repository bindings; scratch Git commands must discover their own .git.
+while IFS= read -r name; do unset "$name"; done < <(git rev-parse --local-env-vars)
 template="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 copier_bin="$(cd "$template" && mise which copier)"
 work="$(mktemp -d)"
