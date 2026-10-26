@@ -1,0 +1,6 @@
+# Seeded from the {{ stack }} stack; the project may adapt its analysis paths.
+parameters:
+  paths:
+    - src
+    - web
+  level: 6

@@ -1,0 +1,16 @@
+# Generated from the {{ stack }} stack; `copier update` replaces this file.
+# Override a task by defining it in mise.toml.
+[tasks.setup]
+run = ["ddev start", "ddev composer install"]
+
+[tasks.check]
+run = ["ddev exec vendor/bin/phpstan analyse", "ddev exec vendor/bin/php-cs-fixer check --diff"]
+
+[tasks.fix]
+run = "ddev exec vendor/bin/php-cs-fixer fix"
+
+[tasks.test]
+run = "ddev exec vendor/bin/pest"
+
+[tasks.dev]
+run = "ddev start"

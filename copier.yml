@@ -16,6 +16,10 @@ _skip_if_exists:
   - package.json
   - tsconfig.json
   - pyproject.toml
+  - composer.json
+  - .ddev/config.yaml
+  - .php-cs-fixer.dist.php
+  - phpstan.neon
   - src/**
   - tests/**
   - tokens.config.mjs

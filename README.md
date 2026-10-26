@@ -7,4 +7,4 @@ copier copy gh:kickinrad/stacks my-project   # pick a stack
 copier update                                 # take the latest template release
 ```
 
-Stacks: `bun-lib`, `python` (more as they are added). The project's stack is recorded in `.copier-answers.yml`.
+Stacks: `bun-lib`, `python`, `astro`, `emdash` (more as they are added). The shared DDEV layer is ready for PHP stacks; no DDEV stack choice is published yet. The project's stack is recorded in `.copier-answers.yml`.

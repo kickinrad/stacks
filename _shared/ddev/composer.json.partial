@@ -1,0 +1,19 @@
+{
+  "type": "project",
+  "require": {
+    "php": ">=8.4"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "*",
+    "friendsofphp/php-cs-fixer": "*",
+    "pestphp/pest": "*"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "scripts": {
+    "test": "pest"
+  }
+}

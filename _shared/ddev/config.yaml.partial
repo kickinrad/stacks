@@ -1,0 +1,4 @@
+# Seeded from the {{ stack }} stack; this DDEV project config is the project's to adapt.
+name: {{ project_name }}
+type: {{ ddev_type | default("php") }}
+docroot: {{ ddev_docroot | default("web") }}
