@@ -1,0 +1,8 @@
+<?php
+
+// Seeded from the {{ stack }} stack; the project may adapt its paths and rules.
+$finder = (new PhpCsFixer\Finder())->in(__DIR__ . '/src')->in(__DIR__ . '/tests')->in(__DIR__ . '/web');
+
+return (new PhpCsFixer\Config())
+    ->setRules(['@PER-CS' => true])
+    ->setFinder($finder);

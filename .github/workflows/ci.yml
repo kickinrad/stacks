@@ -20,3 +20,5 @@ jobs:
       - uses: jdx/mise-action@fc42bcc7ddbf51124c30f95a877a0c5168a3bfde # v5.2.1
       - run: git config --global user.email ci@example.invalid && git config --global user.name ci
       - run: mise run test
+        env:
+          MISE_NODE_VERSION: latest

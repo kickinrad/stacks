@@ -2,6 +2,9 @@
 # Render each stack (or the ones named) into a scratch repo and run its own gates.
 # PROJECT_SETUP may point at project-setup's project_setup.py to add its verify.
 set -euo pipefail
+# A pre-push hook binds Git to the outer repo; Copier renders into scratch repos.
+git_local_env="$(git rev-parse --local-env-vars)"
+while IFS= read -r name; do [ -z "$name" ] || unset "$name"; done <<< "$git_local_env"
 template="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 stacks=("$@")
 [ ${#stacks[@]} -gt 0 ] || mapfile -t stacks < <(cd "$template" && for d in */; do [ -e "$d{{ _copier_conf.answers_file }}.jinja" ] && echo "${d%/}"; done)

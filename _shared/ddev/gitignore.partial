@@ -1,0 +1,8 @@
+vendor/
+.php-cs-fixer.cache
+.phpunit.cache/
+.ddev/.importdb*.sql
+.ddev/.downloads/
+.ddev/.global_commands/
+.ddev/.gitignore
+.ddev/config.local.yaml
