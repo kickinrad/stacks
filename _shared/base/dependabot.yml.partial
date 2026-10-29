@@ -1,0 +1,14 @@
+# Generated from the {{ stack }} stack; `copier update` replaces this file.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+{% if git_profile == "staged-site" %}    target-branch: dev
+{% endif %}  - package-ecosystem: {{ package_ecosystem }}
+    directory: /
+    schedule:
+      interval: weekly
+{% if git_profile == "staged-site" %}    target-branch: dev
+{% endif -%}
