@@ -27,6 +27,8 @@ _skip_if_exists:
   - playwright.config.ts
   - e2e/**
   - .secrets.refs
+  - release-please-config.json
+  - .release-please-manifest.json
 _exclude:
   - "*.partial"
   # Starter samples render only for new projects; an adopted project answers samples=false.
@@ -80,6 +82,12 @@ samples:
   type: bool
   help: Render starter samples (example tokens, source and tests)? Say no when adopting an existing project.
   default: true
+
+publishes:
+  type: bool
+  help: Does another project install this by version (a mise or pipx tool, a release binary)? Adds release-please.
+  default: false
+  when: "{{ stack in ['bun-lib', 'python'] }}"
 
 description:
   type: str
