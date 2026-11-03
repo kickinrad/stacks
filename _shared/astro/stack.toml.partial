@@ -6,7 +6,7 @@ minimum_release_age_excludes = ["github:kickinrad/kumiko"]
 
 [tools]
 bun = "latest"
-"github:kickinrad/kumiko" = "0.17.1"
+"github:kickinrad/kumiko" = "latest"
 
 [tasks.setup]
 run = ["bun install", "bunx playwright install chromium", "kumiko"]
