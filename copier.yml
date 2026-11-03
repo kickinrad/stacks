@@ -22,7 +22,7 @@ _skip_if_exists:
   - phpstan.neon
   - src/**
   - tests/**
-  - tokens.config.mjs
+  - kumiko.config.mjs
   - tokens/**
   - playwright.config.ts
   - e2e/**
@@ -37,6 +37,9 @@ _exclude:
   - "{% if not samples %}src{% endif %}"
   - "{% if not samples %}tests{% endif %}"
 _tasks:
+  # Preserve an existing project's config when Copier adds the new filename.
+  - command: "python3 {{ _copier_conf.src_path }}/_tasks/migrate_kumiko_config.py . {{ _copier_conf.src_path }}/_shared/astro/kumiko.config.mjs.partial"
+    when: "{{ stack in ['astro', 'emdash'] }}"
   # Every stack project is a git repository; linters read .gitignore through it.
   - command: "git rev-parse --git-dir >/dev/null 2>&1 || git init -q -b main"
   # A creator's own AGENTS.md is kept; it gains one link to the stack rules.
