@@ -9,10 +9,10 @@ bun = "latest"
 "github:kickinrad/kumiko" = "latest"
 
 [tasks.setup]
-run = ["bun install", "bunx playwright install chromium", "tokens"]
+run = ["bun install", "bunx playwright install chromium", "kumiko"]
 
 [tasks.check]
-run = ["tokens --check", "bunx ultracite check", "{{ astro_check }}"]
+run = ["kumiko --check", "bunx ultracite check", "{{ astro_check }}"]
 
 [tasks.fix]
 run = "bunx ultracite fix"
