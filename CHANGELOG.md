@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/kickinrad/stacks/compare/v0.7.0...v0.8.0) (2026-11-03)
+
+
+### Features
+
+* a publishes question adds release-please to bun-lib and python ([#11](https://github.com/kickinrad/stacks/issues/11)) ([07f765b](https://github.com/kickinrad/stacks/commit/07f765b06e9d8c7146fdc0890baf924a90fe48dd))
+
 ## [0.7.0](https://github.com/kickinrad/stacks/compare/v0.6.1...v0.7.0) (2026-11-01)
 
 
