@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.0](https://github.com/kickinrad/stacks/compare/v0.8.0...v0.9.0) (2026-11-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* Astro and EmDash projects now render kumiko.config.mjs and call kumiko. Existing custom tokens.config.mjs is carried forward on update; conflicting dual configs fail visibly.
+
+### Features
+
+* render kumiko config and migrate existing projects ([#13](https://github.com/kickinrad/stacks/issues/13)) ([31dd7d5](https://github.com/kickinrad/stacks/commit/31dd7d5443d7c73a37bec55886190ff7e510a3e6))
+
 ## [0.8.0](https://github.com/kickinrad/stacks/compare/v0.7.0...v0.8.0) (2026-11-03)
 
 
