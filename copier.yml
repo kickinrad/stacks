@@ -18,8 +18,10 @@ _skip_if_exists:
   - pyproject.toml
   - composer.json
   - .ddev/config.yaml
-  - .php-cs-fixer.dist.php
+  - phpcs.xml.dist
   - phpstan.neon
+  - phpstan-baseline.neon
+  - wp-content/**
   - src/**
   - tests/**
   - kumiko.config.mjs
@@ -36,6 +38,7 @@ _exclude:
   - "{% if not samples %}e2e{% endif %}"
   - "{% if not samples %}src{% endif %}"
   - "{% if not samples %}tests{% endif %}"
+  - "{% if not samples %}wp-content{% endif %}"
 _tasks:
   # Preserve an existing project's config when Copier adds the new filename.
   - command: "python3 {{ _copier_conf.src_path }}/_tasks/migrate_kumiko_config.py . {{ _copier_conf.src_path }}/_shared/astro/kumiko.config.mjs.partial"
@@ -66,6 +69,8 @@ stack:
     A uv + Python package or tool: python
     An Astro site: astro
     An EmDash site on Cloudflare (extends astro): emdash
+    A WordPress site on DDEV: wordpress
+    A WordPress site on Themeco Pro (extends wordpress): themeco-pro
 
 project_name:
   type: str

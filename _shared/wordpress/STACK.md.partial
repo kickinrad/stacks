@@ -1,0 +1,8 @@
+
+## WordPress
+
+- DDEV runs WordPress (`type: wordpress`). Git tracks only the project's own code (its plugins, mu-plugins and child theme) plus config. WordPress core, uploads, third-party plugins and parent themes are never committed; the seeded `.gitignore` is set up that way.
+- **Check:** PHPCS with the WordPress Coding Standards (`WordPress`, `WordPress-Extra`, `WordPress-Docs`) and PHPCompatibilityWP (`phpcs.xml.dist`), then PHPStan with `szepeviktor/phpstan-wordpress`. `phpstan-baseline.neon` holds the debt an adopted project starts with. Generate it once with `ddev exec vendor/bin/phpstan analyse --generate-baseline phpstan-baseline.neon`; after that it only shrinks. `mise run fix` runs PHPCBF.
+- **Test:** Pest with Brain Monkey, which mocks WordPress functions with no database (`tests/Pest.php` sets it up). Test behavior through the project's own functions and hooks.
+- **Live data:** a local copy of a live site is sealed before its first start: no WP-Cron, no outbound HTTP (`WP_HTTP_BLOCK_EXTERNAL`), live payment gateways and syncs off. Every import masks names, emails and addresses. A local database is never pushed to a live site.
+- **Agents:** the `wordpress@domains` plugin (skills `wordpress-development`, `ddev-wordpress` and `themeco-docs`) is enabled in the seeded `.claude/settings.json` and `.codex/config.toml`.

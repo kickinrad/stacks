@@ -1,0 +1,9 @@
+/*
+
+Theme Name: Pro &ndash; Child Theme
+Description: All theme code for {{ project_name }} lives here, never in the parent Pro theme.
+Version: 1.0.0
+Template: pro
+Text Domain: {{ project_name }}
+
+*/

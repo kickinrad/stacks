@@ -1,6 +1,5 @@
 
-## PHP with DDEV
+## DDEV
 
-- DDEV runs PHP and Composer in the project's container. `mise run setup` starts it and installs the committed `composer.lock` dependencies.
-- PHPStan checks types, PHP-CS-Fixer checks PER-CS, and Pest runs tests. `mise run fix` applies formatting.
-- `.ddev/config.yaml`, `composer.json`, PHP tool configs and source are seeded for the project to adapt. The stack owns only its mise task defaults.
+- DDEV runs PHP, the database and Composer in the project's containers; mise installs DDEV itself, so CI and every machine run the same gates. Docker is the only host prerequisite.
+- `mise run setup` starts DDEV and installs the committed `composer.lock`; `mise run dev` starts it. `.ddev/config.yaml` is seeded for the project to adapt; `.ddev/config.local.yaml` is for one machine and never committed.

@@ -1,0 +1,18 @@
+
+## Themeco Pro
+
+Pro is a licensed vendor theme built on Cornerstone. Check the installed version (`ddev wp theme list`) and use the `themeco-docs` skill to match the official docs to it.
+
+- **Parent theme:** never commit, edit or patch the parent `pro` theme; updates replace it. All theme code goes in the child theme (`wp-content/themes/pro-child/`, `Template: pro`), which Git tracks. Sources: [Child Themes](https://theme.co/docs/child-themes), [Best Practices](https://theme.co/docs/best-practices).
+- **Where code goes:**
+  - PHP actions and filters go in the child theme's `functions.php`.
+  - To change a template, copy the parent's View into the child theme at the same path (`framework/views/...`) and edit the copy ([Best Practices](https://theme.co/docs/best-practices)).
+  - Site behavior that should outlive a theme belongs in the project's plugin, not the theme.
+  - Keep CSS and JS in the child theme, where they're versioned and reviewed. Theme Options Global CSS/JS lives in the database: keep it to small builder-scoped tweaks.
+- **Builder content is data:** Cornerstone and Pro pages, headers, footers, layouts, components, global blocks and Theme Options (global colours and fonts included) live in the database. They move with the data pull, never through Git. Build and review them on the local copy, then apply them to the live site, by hand or by export and import.
+  - Since Pro 6.6.0, Theme Options export and import carry global colours and fonts ([Pro 6 changelog](https://theme.co/docs/changelog/pro-6)).
+  - Custom globals hook in through `cs_theme_options_export_globals` and `cs_theme_options_import_globals` ([Globals API](https://theme.co/docs/globals-api)).
+- **Licence:**
+  - Validate Pro on the live domain, plus at most one staging or development domain added in the Themeco account ([Product Validation](https://theme.co/docs/product-validation)). Local copies don't need validation.
+  - The licence key lives in 1Password, never in the repository, `wp-config.php` or an agent's context.
+- **Design tokens:** `themeco/theme-options.json` is the one hook point. kumiko generates it as a Theme Options import of global colours and fonts, and it is never hand-edited. Once the project has a `kumiko.config.mjs`, `mise run check` runs `kumiko --check` to catch drift. Import it by hand in wp-admin (Pro > Theme Options > Import) on the local copy first, then on the live site.

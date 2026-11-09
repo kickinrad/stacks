@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!-- Seeded from the {{ stack }} stack; list this project's own code below. -->
+<ruleset name="{{ project_name }}">
+	<description>WordPress Coding Standards for {{ project_name }}</description>
+
+	<file>wp-content/plugins/{{ project_name }}</file>
+{{ extra_phpcs_files }}
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+
+	<rule ref="WordPress">
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+	</rule>
+	<rule ref="WordPress-Extra">
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+	</rule>
+	<rule ref="WordPress-Docs"/>
+
+	<config name="testVersion" value="8.1-"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="{{ project_name }}"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="{{ project_name | replace('-', '_') }}"/>
+			</property>
+		</properties>
+	</rule>
+
+	<arg name="colors"/>
+	<arg value="sp"/>
+</ruleset>

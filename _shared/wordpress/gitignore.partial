@@ -1,0 +1,13 @@
+# WordPress: track only this project's own code.
+/wp-admin/
+/wp-includes/
+/wp-*.php
+/index.php
+/xmlrpc.php
+/license.txt
+/readme.html
+/wp-content/*
+!/wp-content/mu-plugins/
+!/wp-content/plugins/
+/wp-content/plugins/*
+!/wp-content/plugins/{{ project_name }}/

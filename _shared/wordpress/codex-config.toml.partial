@@ -1,0 +1,3 @@
+# Seeded from the {{ stack }} stack; the project's own Codex settings go here too.
+[plugins."wordpress@domains"]
+enabled = true

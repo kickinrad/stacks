@@ -1,0 +1,10 @@
+
+[tasks.check]
+run = [{{ extra_check | default("") }}"ddev exec vendor/bin/phpcs", "ddev exec vendor/bin/phpstan analyse --memory-limit=1G"]
+
+[tasks.fix]
+# PHPCBF exits 1 when it fixed something.
+run = "ddev exec 'vendor/bin/phpcbf || [ $? -eq 1 ]'"
+
+[tasks.test]
+run = "ddev exec vendor/bin/pest"
