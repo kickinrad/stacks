@@ -8,6 +8,11 @@
     "friendsofphp/php-cs-fixer": "*",
     "pestphp/pest": "*"
   },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
   "config": {
     "allow-plugins": {
       "pestphp/pest-plugin": true

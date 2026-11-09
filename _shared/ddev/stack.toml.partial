@@ -1,5 +1,8 @@
 # Generated from the {{ stack }} stack; `copier update` replaces this file.
 # Override a task by defining it in mise.toml.
+[tools]
+"aqua:ddev/ddev" = "latest"
+
 [tasks.setup]
 run = ["ddev start", "ddev composer install"]
 

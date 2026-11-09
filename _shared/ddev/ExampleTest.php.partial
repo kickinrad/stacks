@@ -1,0 +1,9 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Example;
+
+it('greets by name', function (): void {
+    expect((new Example())->greet('stack'))->toBe('Hello, stack');
+});

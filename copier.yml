@@ -36,6 +36,7 @@ _exclude:
   - "{% if not samples %}e2e{% endif %}"
   - "{% if not samples %}src{% endif %}"
   - "{% if not samples %}tests{% endif %}"
+  - "{% if not samples %}web{% endif %}"
 _tasks:
   # Preserve an existing project's config when Copier adds the new filename.
   - command: "python3 {{ _copier_conf.src_path }}/_tasks/migrate_kumiko_config.py . {{ _copier_conf.src_path }}/_shared/astro/kumiko.config.mjs.partial"
@@ -66,6 +67,7 @@ stack:
     A uv + Python package or tool: python
     An Astro site: astro
     An EmDash site on Cloudflare (extends astro): emdash
+    A PHP project on DDEV: php
 
 project_name:
   type: str
