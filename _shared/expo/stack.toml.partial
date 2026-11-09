@@ -1,0 +1,33 @@
+# Generated from the {{ stack }} stack; `copier update` replaces this file.
+# Override a task by defining it in mise.toml.
+[tools]
+bun = "latest"
+node = "latest"
+
+[tasks.setup]
+# `expo customize tsconfig.json` writes the generated Expo and router types (expo-env.d.ts, .expo/types).
+run = ["bun install", "CI=1 bunx expo customize tsconfig.json"{% if storybook %}, "bunx sb-rn-get-stories --config-path .rnstorybook"{% endif %}]
+
+[tasks.check]
+run = ["bunx biome check", "bunx expo lint", "bunx tsc --noEmit", "bunx expo-doctor"]
+
+[tasks.fix]
+run = ["bunx biome check --write", "bunx expo lint --fix"]
+
+[tasks.test]
+run = "bunx jest --ci --passWithNoTests"
+
+[tasks.dev]
+run = "bunx expo start"
+{%- if storybook %}
+
+[tasks.storybook]
+run = "bunx storybook dev -p 6006"
+
+[tasks.storybook-device]
+env = { STORYBOOK_ENABLED = "true" }
+run = "bunx expo start"
+
+[tasks.storybook-build]
+run = "bunx storybook build"
+{%- endif %}

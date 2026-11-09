@@ -1,0 +1,21 @@
+
+## Expo
+
+- The app comes from the official creator (`create-expo-app`, default template, latest SDK), cleared to a blank Expo Router app by the template's own `reset-project`; this stack layers tooling on top and leaves app code to the project. Expo Router owns navigation under `src/app/`.
+- Bun installs packages and runs scripts; Node runs Expo and Metro. Add a package with `bunx expo install <package>` so it matches the SDK, never a bare `bun add`.
+- **Check:** Biome formats through the Ultracite preset with its linter off (`biome.jsonc`); `expo lint` (ESLint with `eslint-config-expo`) is the linter; `tsc --noEmit` with `strict` is the type gate (`setup` generates Expo's types first); `expo-doctor` checks SDK and dependency health. `mise run fix` formats and applies lint fixes, and an agent post-edit hook formats.
+- **Lint debt:** an adopted app's existing lint errors sit in `eslint-suppressions.json` (ESLint's bulk suppressions: `bunx expo lint -- --suppress-all`, once). The file only shrinks (`bunx expo lint -- --prune-suppressions`); new code meets every rule.
+- **Version hold:** `eslint-config-expo` breaks on ESLint 10 (its React plugin), so `eslint@9` is the one recorded hold, matching what `expo lint` itself installs. Lift it when `eslint-config-expo` supports 10 (kickinrad/stacks#18).
+- **Test:** Jest with the `jest-expo` preset and React Native Testing Library (`jest.config.js`). Tests live in `__tests__/` folders beside the code they test and import `expect` and `test` from `@jest/globals`.
+- **Agents:** Expo's official plugin (`expo@claude-plugins-official` for Claude Code, `expo@openai-curated` for Codex) brings Expo's skills and the Expo MCP server. The Expo MCP server needs an Expo account login, which stays the user's.
+{%- if storybook %}
+
+## Storybook
+
+- Storybook follows its own React Native guide, both ways: on device (`@storybook/react-native`, `.rnstorybook/`) and in the browser (`@storybook/react-native-web-vite`, `.storybook/`). Both read the same stories, `src/**/*.stories.tsx`.
+- Every Storybook package stays on one major; `.agents/stack/check` reports a split.
+- An app with a dynamic `app.config.js` adds the config plugins `expo install` cannot write itself: Storybook's on-device controls need `@react-native-community/datetimepicker` in `plugins`.
+- `mise run storybook` serves the browser Storybook on port 6006; `mise run storybook-device` starts Expo with `STORYBOOK_ENABLED=true`, which swaps the app's entry point for Storybook. `mise run storybook-build` builds the static site to `storybook-static/`.
+- `.rnstorybook/storybook.requires.ts` is generated (`setup` and every Metro start rewrite it); commit it, never edit it.
+- **Agents:** the Storybook MCP server (`@storybook/addon-mcp`) runs inside the browser Storybook at `http://localhost:6006/mcp` and is declared in `.mcp.json` and `.codex/config.toml`. `bunx storybook skills` prints Storybook's own agent workflow for stories; follow it for UI changes. Storybook's Claude and Codex plugin waits for Storybook 11 (kickinrad/stacks#19).
+{%- endif %}

@@ -33,6 +33,7 @@ for stack in "${stacks[@]}"; do
     mise run check
     mise run test
     if mise tasks --json | grep -q '"name": "e2e"'; then mise run e2e; fi
+    if mise tasks --json | grep -q '"name": "storybook-build"'; then mise run storybook-build >/dev/null; fi
     python3 .agents/stack/check --structure
     test -x .agents/stack/check
     if [ -n "${PROJECT_SETUP:-}" ]; then

@@ -1,0 +1,9 @@
+// https://storybookjs.github.io/react-native/docs/intro/getting-started/
+// STORYBOOK_ENABLED=true swaps the app's entry point for Storybook; otherwise the app runs with no Storybook code.
+const { getDefaultConfig } = require("expo/metro-config");
+const { withStorybook } = require("@storybook/react-native/withStorybook");
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname);
+
+module.exports = withStorybook(config);

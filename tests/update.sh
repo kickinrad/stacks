@@ -15,20 +15,20 @@ tar -C "$template" --exclude=./.git -cf - . | tar -C "$work/template" -xf -
 cd "$work/template"
 git init -q -b main
 test "$(git rev-parse --path-format=absolute --git-common-dir)" != "$(git -C "$template" rev-parse --path-format=absolute --git-common-dir)"
-git add -A && git -c user.email=t@t -c user.name=t commit -qm "working tree" --allow-empty
+git add -A && git -c user.email=t@t -c user.name=t commit -qm "chore: 🔧 working tree" --allow-empty
 git tag v900.0.0
 "$copier_bin" copy --quiet --defaults --trust --vcs-ref v900.0.0 --data stack=bun-lib "$work/template" "$work/project"
 cd "$work/project"
 mise trust -q .config/mise/conf.d/stack.toml
 mise trust -q mise.toml
 mise run setup >/dev/null
-git add -A && git -c user.email=t@t -c user.name=t commit -qm adopt
+git add -A && git -c user.email=t@t -c user.name=t commit -qm "chore: 🎉 adopt"
 echo "Project note." >> AGENTS.md
-git -c user.email=t@t -c user.name=t commit -qam "project edit"
+git -c user.email=t@t -c user.name=t commit -qam "docs: 📝 project edit"
 cd "$work/template"
 printf '\n- Release marker: v900.0.1.\n' >> _shared/base/STACK.md.partial
 printf '\nSeed change that must not reach existing projects.\n' >> _shared/base/AGENTS.md.partial
-git -c user.email=t@t -c user.name=t commit -qam "owned and seeded change"
+git -c user.email=t@t -c user.name=t commit -qam "chore: 🔧 owned and seeded change"
 git tag v900.0.1
 cd "$work/project"
 if python3 .agents/stack/check --json > "$work/before.json"; then echo "check passed while a release behind" >&2; exit 1; fi
@@ -63,8 +63,8 @@ adopted="$work/adopted"
 "$copier_bin" copy --quiet --defaults --trust --vcs-ref v900.0.0 --data stack=python --data samples=false "$work/template" "$adopted"
 # An adopted project brings its own source.
 mkdir -p "$adopted/src/adopted" && printf '"""Adopted."""\n' > "$adopted/src/adopted/__init__.py"
-(cd "$adopted" && mise trust -q .config/mise/conf.d/stack.toml && mise trust -q mise.toml && mise run setup >/dev/null 2>&1 && git add -A && git -c user.email=t@t -c user.name=t commit -qm adopt)
-(cd "$work/template" && printf '\n' >> _shared/base/STACK.md.partial && git -c user.email=t@t -c user.name=t commit -qam bump && git tag v900.0.2)
+(cd "$adopted" && mise trust -q .config/mise/conf.d/stack.toml && mise trust -q mise.toml && mise run setup >/dev/null 2>&1 && git add -A && git -c user.email=t@t -c user.name=t commit -qm "chore: 🎉 adopt")
+(cd "$work/template" && printf '\n' >> _shared/base/STACK.md.partial && git -c user.email=t@t -c user.name=t commit -qam "chore: 🔖 bump" && git tag v900.0.2)
 (cd "$adopted" && "$copier_bin" update --quiet --defaults --trust --skip-tasks)
 test ! -e "$adopted/tests"
 test "$(cat "$adopted/src/adopted/__init__.py")" = '"""Adopted."""'
