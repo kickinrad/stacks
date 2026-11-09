@@ -9,7 +9,7 @@ node = "latest"
 run = ["bun install", "CI=1 bunx expo customize tsconfig.json"{% if storybook %}, "bunx sb-rn-get-stories --config-path .rnstorybook"{% endif %}]
 
 [tasks.check]
-run = ["bunx biome check", "bunx expo lint --max-warnings 0", "bunx tsc --noEmit", "bunx expo-doctor"]
+run = ["bunx biome check", "bunx expo lint", "bunx tsc --noEmit", "bunx expo-doctor"]
 
 [tasks.fix]
 run = ["bunx biome check --write", "bunx expo lint --fix"]

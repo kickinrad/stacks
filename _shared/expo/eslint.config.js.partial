@@ -3,6 +3,10 @@ const { defineConfig, globalIgnores } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
 
 module.exports = defineConfig([
-  globalIgnores(["dist/*", "storybook-static/*", ".rnstorybook/storybook.requires.ts"]),
+  globalIgnores([
+    "dist/*",
+    "storybook-static/*",
+    ".rnstorybook/storybook.requires.ts",
+  ]),
   expoConfig,
 ]);

@@ -72,17 +72,19 @@ _tasks:
   - command: "bunx skills add emdash-cms/emdash --skill building-emdash-site --skill emdash-cli --skill creating-plugins -a claude-code -a codex -y"
     when: "{{ stack == 'emdash' }}"
   # expo: `expo install` picks SDK-compatible versions and adds config plugins to app.json.
-  - command: "bun install && bunx expo install jest-expo jest @types/jest @testing-library/react-native eslint-config-expo -- --dev && bun add --dev eslint@9 @biomejs/biome@latest ultracite@latest"
+  - command: "bun install && bunx expo install --bun jest-expo jest @types/jest @testing-library/react-native eslint-config-expo -- --dev && bun add --dev eslint@9 @biomejs/biome@latest ultracite@latest"
     when: "{{ stack == 'expo' }}"
   # Storybook's React Native guide, both on device and in the browser; every Storybook package tracks the same latest major.
-  - command: "bunx expo install storybook @storybook/react-native @storybook/react-native-ui-lite @storybook/addon-ondevice-controls @storybook/addon-ondevice-actions @react-native-async-storage/async-storage @react-native-community/datetimepicker @react-native-community/slider react-native-svg @gorhom/bottom-sheet && bunx expo install @storybook/react-native-web-vite @storybook/addon-docs @storybook/addon-mcp vite -- --dev"
+  # With a dynamic app.config.js, expo install installs but cannot add config plugins and exits 1; STACK.md says to add them.
+  - command: "{ bunx expo install --bun storybook @storybook/react-native @storybook/react-native-ui-lite @storybook/addon-ondevice-controls @storybook/addon-ondevice-actions @react-native-async-storage/async-storage @react-native-community/datetimepicker @react-native-community/slider react-native-svg @gorhom/bottom-sheet react-native-reanimated react-native-worklets react-native-gesture-handler react-native-safe-area-context react-dom || [ -f app.config.js ] || [ -f app.config.ts ]; } && bunx expo install --bun @storybook/react-native-web-vite @storybook/addon-docs @storybook/addon-mcp vite -- --dev"
     when: "{{ stack == 'expo' and storybook }}"
   - command: "python3 {{ _copier_conf.src_path }}/_tasks/ensure_mcp.py . storybook=http://localhost:6006/mcp"
     when: "{{ stack == 'expo' and storybook }}"
   # The creator's .gitignore is kept; it gains the base and Storybook entries it lacks.
   - command: "for line in mise.lock mise.local.toml storybook-static '*storybook.log'; do grep -qxF \"$line\" .gitignore || echo \"$line\" >> .gitignore; done"
     when: "{{ stack == 'expo' }}"
-  - command: "bunx biome check --write"
+  # Biome needs a second pass to settle some files (the upstream quirk in #3).
+  - command: "bunx biome check --write; bunx biome check --write"
     when: "{{ stack == 'expo' and _copier_operation == 'copy' }}"
 
 stack:
