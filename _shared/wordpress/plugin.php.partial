@@ -1,0 +1,21 @@
+<?php
+/**
+ * Plugin Name: {{ project_name }}
+ * Description: Starter plugin seeded by the stack template.
+ * Version: 0.1.0
+ * Text Domain: {{ project_name }}
+ *
+ * @package {{ project_name }}
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Greets a visitor by name.
+ *
+ * @param string $name Visitor name.
+ * @return string Escaped greeting.
+ */
+function {{ project_name | replace('-', '_') }}_greeting( string $name ): string {
+	return 'Hello, ' . esc_html( $name );
+}

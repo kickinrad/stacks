@@ -1,0 +1,23 @@
+{
+  "type": "project",
+  "require-dev": {
+    "brain/monkey": "*",
+    "dealerdirect/phpcodesniffer-composer-installer": "*",
+    "pestphp/pest": "*",
+    "phpcompatibility/phpcompatibility-wp": "*",
+    "phpstan/extension-installer": "*",
+    "phpstan/phpstan": "*",
+    "szepeviktor/phpstan-wordpress": "*",
+    "wp-coding-standards/wpcs": "*"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "pestphp/pest-plugin": true,
+      "phpstan/extension-installer": true
+    }
+  },
+  "scripts": {
+    "test": "pest"
+  }
+}

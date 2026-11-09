@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+use Brain\Monkey;
+
+// WordPress functions are mocked with Brain Monkey; no WordPress or database loads.
+defined('ABSPATH') || define('ABSPATH', __DIR__ . '/');
+
+uses()
+    ->beforeEach(fn () => Monkey\setUp())
+    ->afterEach(fn () => Monkey\tearDown())
+    ->in(__DIR__);

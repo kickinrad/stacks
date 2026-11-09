@@ -1,0 +1,8 @@
+# Seeded from the {{ stack }} stack; list this project's own code below.
+includes:
+  - phpstan-baseline.neon
+parameters:
+  level: 6
+  paths:
+    - wp-content/plugins/{{ project_name }}
+{{ extra_phpstan_paths }}

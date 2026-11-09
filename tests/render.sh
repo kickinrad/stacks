@@ -26,8 +26,8 @@ for stack in "${stacks[@]}"; do
     export CI=1
     test ! -e CLAUDE.md
     test ! -e mise.lock
-    # A DDEV stack leaves containers and a global project entry behind.
-    [ ! -d .ddev ] || trap 'mise exec -- ddev delete --omit-snapshot --yes >/dev/null 2>&1' EXIT
+    # A DDEV stack leaves containers and a global project entry behind; a failed cleanup fails the render.
+    [ ! -d .ddev ] || trap 'rc=$?; mise exec -- ddev delete --omit-snapshot --yes >/dev/null || { echo "ddev cleanup failed: $stack" >&2; rc=1; }; exit $rc' EXIT
     mise run setup >/dev/null
     git add -A
     mise run check

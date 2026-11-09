@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+use Brain\Monkey\Functions;
+
+require_once __DIR__ . '/../wp-content/plugins/{{ project_name }}/{{ project_name }}.php';
+
+it('escapes the visitor name', function (): void {
+    Functions\when('esc_html')->alias('htmlspecialchars');
+
+    expect({{ project_name | replace('-', '_') }}_greeting('<b>stack</b>'))->toBe('Hello, &lt;b&gt;stack&lt;/b&gt;');
+});

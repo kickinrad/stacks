@@ -1,0 +1,8 @@
+<?php
+/**
+ * Pro child theme: actions, filters and View overrides for {{ project_name }}.
+ *
+ * @package {{ project_name }}
+ */
+
+add_filter( 'x_enqueue_parent_stylesheet', '__return_true' );
