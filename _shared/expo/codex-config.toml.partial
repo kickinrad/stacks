@@ -1,0 +1,8 @@
+# Seeded from the {{ stack }} stack; the project's own Codex settings go here too.
+[plugins."expo@openai-curated"]
+enabled = true
+{%- if storybook %}
+
+[mcp_servers.storybook]
+url = "http://localhost:6006/mcp"
+{%- endif %}

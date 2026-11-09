@@ -1,0 +1,1 @@
+{% set owned_files = [".copier-answers.yml", ".agents/stack/STACK.md", ".agents/stack/check", ".config/mise/conf.d/stack.toml", ".github/workflows/ci.yml", ".github/workflows/stack-fresh.yml", ".github/dependabot.yml", ".codex/hooks.json"] %}{% set required_mcp = ["storybook"] if storybook else [] %}{% set needs_biome = true %}{% include "_shared/base/check.partial" %}

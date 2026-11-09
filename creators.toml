@@ -5,3 +5,8 @@ run = "bun create astro@latest {dir} -- --template minimal --no-install --no-git
 
 [emdash]
 run = "bunx create-emdash@latest {dir} --platform cloudflare --template starter --pm bun --no-install --yes"
+
+# Expo's own reset-project script clears the starter screens to a blank Expo Router app.
+# The creator's .claude/settings.json is dropped so the stack's (Expo plugin plus hooks) renders.
+[expo]
+run = "bunx create-expo-app@latest {dir} --no-install --yes && cd {dir} && echo n | node scripts/reset-project.js >/dev/null && npm pkg delete scripts.reset-project && rm -f .claude/settings.json"

@@ -8,4 +8,4 @@ uv = "latest"
 run = "copier --version >/dev/null"
 
 [tasks.test]
-run = ["tests/update.sh", "tests/render.sh", "tests/publishes.sh", "python3 tests/kumiko-config.py"]
+run = ["tests/update.sh", "tests/render.sh", "tests/publishes.sh", "tests/expo-facets.sh", "python3 tests/kumiko-config.py"]

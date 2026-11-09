@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["ultracite/biome/core"],
+  // expo lint (ESLint) is the linter; Biome formats.
+  "linter": { "enabled": false },
+  "files": {
+    "includes": ["**", "!.copier-answers.yml", "!.rnstorybook/storybook.requires.ts", "!.expo", "!expo-env.d.ts"]
+  }
+}

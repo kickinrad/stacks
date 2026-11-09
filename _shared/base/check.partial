@@ -87,6 +87,16 @@ def structure() -> list[dict[str, str]]:
         found.extend({"id": "missing-facet", "message": f".mcp.json lacks the {name} server"} for name in REQUIRED_MCP if name not in servers)
     if (ROOT / "CLAUDE.md").exists():
         found.append({"id": "claude-md", "message": "AGENTS.md only: merge CLAUDE.md into AGENTS.md and delete it"})
+    if (ROOT / "bun.lock").is_file() and (ROOT / "package.json").is_file():
+        manifest = json.loads((ROOT / "package.json").read_text())
+        declared = {name for group in ("dependencies", "devDependencies") for name in manifest.get(group, {})
+                    if name == "storybook" or name.startswith("@storybook/")}
+        resolved = dict(re.findall(r'^\s*"([^"]+)": \["[^"]*?@(\d+)\.', (ROOT / "bun.lock").read_text(), re.M))
+        majors = {resolved[name] for name in declared if name in resolved}
+    else:
+        majors = set()
+    if len(majors) > 1:
+        found.append({"id": "storybook-major", "message": f"Storybook packages span majors {sorted(majors)}: align them on one major"})
     for lock in ("mise.lock", ".config/mise/mise.lock"):
         if (ROOT / lock).exists():
             found.append({"id": "mise-lock", "message": f"tools track latest: delete {lock}"})
