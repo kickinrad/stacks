@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/kickinrad/stacks/compare/v0.9.0...v0.10.0) (2026-11-24)
+
+
+### Features
+
+* ✨ build tokens with breacan; carry kumiko.config.mjs across ([#28](https://github.com/kickinrad/stacks/issues/28)) ([5b28f31](https://github.com/kickinrad/stacks/commit/5b28f3197ce40b07c7a3746fa34a8067a2ac316b))
+
 ## [0.9.0](https://github.com/kickinrad/stacks/compare/v0.8.0...v0.9.0) (2026-11-09)
 
 
