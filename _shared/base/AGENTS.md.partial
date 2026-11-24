@@ -1,5 +1,5 @@
 # {{ project_name }}
 
-{{ description }}
+{% if description %}{{ description }}
 
-Stack rules live in [.agents/stack/STACK.md](.agents/stack/STACK.md); this file records only what is specific to this project.
+{% endif %}Stack rules live in [.agents/stack/STACK.md](.agents/stack/STACK.md); this file records only what is specific to this project.
