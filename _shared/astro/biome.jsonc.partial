@@ -1,7 +1,8 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite/biome/core", "ultracite/biome/astro"],
-  "files": { "includes": ["!public", "!.copier-answers.yml"] },
+  // Installed agent skills (.agents/skills) are their authors' files, not the project's.
+  "files": { "includes": ["!public", "!.copier-answers.yml", "!.agents/skills"] },
   "overrides": [
     {
       // Astro components are PascalCase by framework convention.
