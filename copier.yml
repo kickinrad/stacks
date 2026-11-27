@@ -51,9 +51,6 @@ _exclude:
   - "{% if stack == 'expo' and not storybook %}.mcp.json{% endif %}"
   - "{% if stack == 'expo' and not storybook %}src/components/greeting.stories.tsx{% endif %}"
 _tasks:
-  # Preserve an existing project's config when Copier adds the new filename.
-  - command: "python3 {{ _copier_conf.src_path }}/_tasks/migrate_token_config.py . {{ _copier_conf.src_path }}/_shared/astro/breacan.config.mjs.partial"
-    when: "{{ stack in ['astro', 'emdash'] }}"
   # Every stack project is a git repository; linters read .gitignore through it.
   - command: "git rev-parse --git-dir >/dev/null 2>&1 || git init -q -b main"
   # A creator's own AGENTS.md is kept; it gains one link to the stack rules.
