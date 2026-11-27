@@ -6,7 +6,8 @@ minimum_release_age_excludes = ["github:kickinrad/breacan"]
 
 [tools]
 bun = "latest"
-"github:kickinrad/breacan" = "latest"
+# Pinned: the next release breaks the 0.33 config; unpin in #31.
+"github:kickinrad/breacan" = "0.33"
 
 [tasks.setup]
 run = ["bun install", "bunx playwright install chromium", "breacan build"]
